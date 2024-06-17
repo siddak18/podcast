@@ -3,6 +3,7 @@ import { useState, Fragment } from 'react'
 
 import {createUserWithEmailAndPassword} from 'firebase/auth'
 import {auth} from '../../../../firebase/firebase.config.js'
+
 // ** Next Imports
 import Link from 'next/link'
 
@@ -94,6 +95,7 @@ const RegisterPage = () => {
         setValues({username:'',password:'',email:'',showPassword:false});
     }
   }
+  
   return (
     <Box className='content-center'>
       <Card sx={{ zIndex: 1 }}>

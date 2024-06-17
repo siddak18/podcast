@@ -20,31 +20,42 @@ import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import Link from 'next/link'
+
 const categories = ["Web Development", "App Development", "College", "Gym", "Running"];
+
 const Discover = () => {
+
   const [podcasts, setPodcasts] = useState([]);
   const [open, setOpen] = useState(false);
   const [currentPodcast, setCurrentPodcast] = useState(null);
+
   const [updatedValues, setUpdatedValues] = useState({
     title: '',
     description: '',
   });
   const [selectedCategory, setSelectedCategory] = useState('');
+
   useEffect(() => {
+
     const fetchPodcasts = async () => {
       try {
         const querySnapshot = await getDocs(collection(textdb, "podcasts"));
+
         const podcastsList = querySnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
         }));
+
         setPodcasts(podcastsList);
       } catch (error) {
         console.error("Error fetching podcasts:", error);
       }
+
     };
+
     fetchPodcasts();
   }, []);
+  
   const handleDelete = async (id) => {
     try {
       await deleteDoc(doc(textdb, "podcasts", id));
@@ -116,7 +127,7 @@ const Discover = () => {
         {filteredPodcasts.length > 0 ? (
           filteredPodcasts.map(podcast => (
          <Grid item xs={12} sm={6} md={4} key={podcast.id}>
-            <Link href={`podcast/${podcast.id}` }>
+            <Link passHref href={`podcast/${podcast.id}` }>
               <Card sx={{cursor:'pointer'}}>
                 {podcast.imageUrl && (
                   <CardMedia

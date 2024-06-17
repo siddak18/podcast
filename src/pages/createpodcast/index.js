@@ -20,7 +20,8 @@ import React, { useState } from 'react';
     import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
     import { db, auth, storage,textdb } from '../../../firebase/firebase.config.js';
     import { v4 as uuidv4 } from 'uuid';
-import { addDoc, collection, setDoc ,doc} from 'firebase/firestore';
+    import { addDoc, collection, setDoc ,doc} from 'firebase/firestore';
+
     Aws.config.update({
         accessKeyId:'AKIA2ZHUZR3ALSHCD6UD',
         secretAccessKey:'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',
@@ -67,6 +68,7 @@ import { addDoc, collection, setDoc ,doc} from 'firebase/firestore';
         const uploadFile = async (file, path) => {
             const storageReference = storageRef(storage, path);
             await uploadBytes(storageReference, file);
+
             return await getDownloadURL(storageReference);
         };
     
@@ -108,8 +110,10 @@ import { addDoc, collection, setDoc ,doc} from 'firebase/firestore';
             setopen(false);
             setValues({title:'',description:'',category:'',prompt:''});
             setImage(null);
+
             setAudio(null);
         };
+        
         const generateVoice = () => {
             polly.synthesizeSpeech({
                 Text: values.prompt,
