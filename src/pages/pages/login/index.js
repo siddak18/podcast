@@ -32,7 +32,6 @@ import Github from 'mdi-material-ui/Github'
 import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 
-import {withoutauth} from '../../../../lib/withoutauth.jsx'
 
 // ** Configs
 import themeConfig from 'src/configs/themeConfig'
