@@ -1,7 +1,7 @@
 // pages/profile.js
 
 import { useEffect, useState } from 'react'
-import { withauth } from '../../../lib/withauth'
+import { withauth } from '../../../lib/Withauth'
 import { doc, getDoc } from 'firebase/firestore'
 import { auth, textdb } from '../../../firebase/firebase.config'
 import { Box, Container, Typography } from '@mui/material'
