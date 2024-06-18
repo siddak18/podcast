@@ -1,25 +1,22 @@
 // ** React Imports
-import { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
-import Link from '@mui/material/Link'
-import Alert from '@mui/material/Alert'
-import Select from '@mui/material/Select'
-import { styled } from '@mui/material/styles'
-import MenuItem from '@mui/material/MenuItem'
+import CardContent from '@mui/material/CardContent'
+import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import InputLabel from '@mui/material/InputLabel'
-import AlertTitle from '@mui/material/AlertTitle'
-import IconButton from '@mui/material/IconButton'
-import CardContent from '@mui/material/CardContent'
 import FormControl from '@mui/material/FormControl'
-import Button from '@mui/material/Button'
+import Select from '@mui/material/Select'
+import MenuItem from '@mui/material/MenuItem'
+import InputLabel from '@mui/material/InputLabel'
+import { styled } from '@mui/material/styles'
 
-// ** Icons Imports
-import Close from 'mdi-material-ui/Close'
+// ** Firebase Imports
+import { doc, getDoc, setDoc } from 'firebase/firestore'
+import { textdb, auth } from '../../../firebase/firebase.config.js'
 
 const ImgStyled = styled('img')(({ theme }) => ({
   width: 120,
@@ -46,22 +43,66 @@ const ResetButtonStyled = styled(Button)(({ theme }) => ({
 }))
 
 const TabAccount = () => {
-  // ** State
-  const [openAlert, setOpenAlert] = useState(true)
   const [imgSrc, setImgSrc] = useState('/images/avatars/1.png')
+  const [userData, setUserData] = useState({
+    username: '',
+    name: '',
+    role: '',
+    country: 'India',
+    imgSrc: '/images/avatars/1.png'  // Initial default image
+  })
 
   const onChange = file => {
     const reader = new FileReader()
     const { files } = file.target
     if (files && files.length !== 0) {
-      reader.onload = () => setImgSrc(reader.result)
+      reader.onload = () => {
+        setImgSrc(reader.result)
+        setUserData(prevState => ({ ...prevState, imgSrc: reader.result }))  // Update userData with image src
+      }
       reader.readAsDataURL(files[0])
     }
   }
 
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    setUserData({ ...userData, [name]: value })
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    try {
+      const userId = auth.currentUser.uid
+      await setDoc(doc(textdb, 'users', userId), userData)
+      console.log('User data updated successfully')
+    } catch (error) {
+      console.error('Error updating user data:', error)
+    }
+  }
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const userId = auth.currentUser.uid
+        const docRef = doc(textdb, 'users', userId)
+        const docSnap = await getDoc(docRef)
+        if (docSnap.exists()) {
+          const data = docSnap.data()
+          setUserData(data)
+          setImgSrc(data.imgSrc || '/images/avatars/1.png')  // Use the fetched imgSrc
+        } else {
+          console.log('No such document!')
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error)
+      }
+    }
+
+    fetchUserData()
+  }, [])
   return (
     <CardContent>
-      <form>
+      <form onSubmit={handleSubmit}>
         <Grid container spacing={7}>
           <Grid item xs={12} sx={{ marginTop: 4.8, marginBottom: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -88,67 +129,43 @@ const TabAccount = () => {
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <TextField fullWidth label='Username' placeholder='johnDoe' defaultValue='johnDoe' />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField fullWidth label='Name' placeholder='John Doe' defaultValue='John Doe' />
+            <TextField
+              fullWidth
+              label='Username'
+              name='username'
+              value={userData.username}
+              onChange={handleChange}
+              placeholder='johnDoe'
+            />
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              type='email'
-              label='Email'
-              placeholder='johnDoe@example.com'
-              defaultValue='johnDoe@example.com'
+              label='Name'
+              name='name'
+              value={userData.name}
+              onChange={handleChange}
+              placeholder='John Doe'
             />
           </Grid>
+          
           <Grid item xs={12} sm={6}>
             <FormControl fullWidth>
-              <InputLabel>Role</InputLabel>
-              <Select label='Role' defaultValue='admin'>
-                <MenuItem value='admin'>Admin</MenuItem>
-                <MenuItem value='author'>Author</MenuItem>
-                <MenuItem value='editor'>Editor</MenuItem>
-                <MenuItem value='maintainer'>Maintainer</MenuItem>
-                <MenuItem value='subscriber'>Subscriber</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <FormControl fullWidth>
-              <InputLabel>Status</InputLabel>
-              <Select label='Status' defaultValue='active'>
-                <MenuItem value='active'>Active</MenuItem>
-                <MenuItem value='inactive'>Inactive</MenuItem>
-                <MenuItem value='pending'>Pending</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField fullWidth label='Company' placeholder='ABC Pvt. Ltd.' defaultValue='ABC Pvt. Ltd.' />
-          </Grid>
-
-          {openAlert ? (
-            <Grid item xs={12} sx={{ mb: 3 }}>
-              <Alert
-                severity='warning'
-                sx={{ '& a': { fontWeight: 400 } }}
-                action={
-                  <IconButton size='small' color='inherit' aria-label='close' onClick={() => setOpenAlert(false)}>
-                    <Close fontSize='inherit' />
-                  </IconButton>
-                }
+              <InputLabel>Country</InputLabel>
+              <Select
+                label='Country'
+                name='country'
+                value={userData.country}
+                onChange={handleChange}
               >
-                <AlertTitle>Your email is not confirmed. Please check your inbox.</AlertTitle>
-                <Link href='/' onClick={e => e.preventDefault()}>
-                  Resend Confirmation
-                </Link>
-              </Alert>
-            </Grid>
-          ) : null}
+                <MenuItem value='India'>India</MenuItem>
+                {/* Add other countries if needed */}
+              </Select>
+            </FormControl>
+          </Grid>
 
           <Grid item xs={12}>
-            <Button variant='contained' sx={{ marginRight: 3.5 }}>
+            <Button type='submit' variant='contained' sx={{ marginRight: 3.5 }}>
               Save Changes
             </Button>
             <Button type='reset' variant='outlined' color='secondary'>

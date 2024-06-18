@@ -13,11 +13,6 @@ import GoogleCirclesExtended from 'mdi-material-ui/GoogleCirclesExtended'
 const navigation = () => {
   return [
     {
-      title: 'Home',
-      icon: HomeOutline,
-      path: '/'
-    },
-    {
       title: 'Account Settings',
       icon: AccountCogOutline,
       path: '/account-settings'

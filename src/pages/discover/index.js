@@ -20,6 +20,7 @@ import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import Link from 'next/link'
+import { Delete, Details, Update } from '@mui/icons-material';
 
 const categories = ["Web Development", "App Development", "College", "Gym", "Running"];
 
@@ -45,7 +46,7 @@ const Discover = () => {
           id: doc.id,
           ...doc.data()
         }));
-
+       console.log(podcastsList[0]);
         setPodcasts(podcastsList);
       } catch (error) {
         console.error("Error fetching podcasts:", error);
@@ -127,9 +128,9 @@ const Discover = () => {
         {filteredPodcasts.length > 0 ? (
           filteredPodcasts.map(podcast => (
          <Grid item xs={12} sm={6} md={4} key={podcast.id}>
-            <Link passHref href={`podcast/${podcast.id}` }>
-              <Card sx={{cursor:'pointer'}}>
+              <Card sx={{cursor:'pointer',height:'100%'}} >
                 {podcast.imageUrl && (
+                  
                   <CardMedia
                     component="img"
                     height="140"
@@ -137,34 +138,38 @@ const Discover = () => {
                     alt={podcast.title}
                   />
                 )}
+                 <Link passHref href={`podcast/${podcast.id}` }>
                 <CardContent>
                   <Typography gutterBottom variant="h5" component="div">
                     {podcast.title}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    {podcast.description}
+                    {
+                    podcast.description
+                    }
                   </Typography>
                 </CardContent>
-                <CardActions>
+                </Link>
+                <CardActions sx={{display:'flex',flexDirection:'column'}}>
                   {podcast.audioUrl && (
                     <audio controls src={podcast.audioUrl} style={{ width: '100%' }}></audio>
                   )}
                   {podcast.userId === auth.currentUser?.uid && (
-                    <Box>
+                    <Box sx={{width:'100%',display:'flex',justifyContent:'space-between',marginTop:'20px'}}>
                       <Button size="small" color="secondary" onClick={() => handleDelete(podcast.id)}>
-                        Delete
+                        <Delete></Delete>
                       </Button>
                       <Button size="small" color="primary" onClick={() => handleOpenUpdate(podcast)}>
-                        Update
+                        <Update></Update>
                       </Button>
+                      <Link passHref href={`podcast/${podcast.id}`}>
+                      <Details></Details>
+                      </Link>
                     </Box>
                   )}
-                  <Button size="small" color="primary">
-                    Learn More
-                  </Button>
                 </CardActions>
               </Card>
-              </Link>
+              
             </Grid>
           ))
         ) : (

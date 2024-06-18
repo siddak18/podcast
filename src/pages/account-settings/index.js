@@ -68,15 +68,6 @@ const AccountSettings = () => {
             }
           />
           <Tab
-            value='security'
-            label={
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <LockOpenOutline />
-                <TabName>Security</TabName>
-              </Box>
-            }
-          />
-          <Tab
             value='info'
             label={
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
